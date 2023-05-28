@@ -15,6 +15,7 @@ const allTypes=[];
 let pokemonsListFiltered=[];
 
 let turn="";
+let battleCall;
 let userlife=500;
 let cpulife=500;
 
@@ -199,10 +200,16 @@ const getDetails = async (mainlistpokemons)=>{
         id: listDetails.id,
         name: pokemon.name,
         type: [listDetails.types.map((item)=>item.type.name)],
-        img: listDetails.sprites.front_default
+        img: listDetails.sprites.front_default,
+        heigth: listDetails.height,
+        
+        stats: listDetails.stats
         }
+
+        
+       
         mainListDetails.push(pokemonsToPrint)
-        //console.log(pokemomsToPrint)
+        //console.log(pokemonsToPrint)
     }
     loadingDiv$$.setAttribute('hidden', '');
     //console.log(mainListDetails)
@@ -217,15 +224,19 @@ const printPokemon = (pokemons)=>{
     informBattle$$.textContent="<<< Click a pokemon for battle >>>";
     mainContainer$$.appendChild(informBattle$$);
     pokemons.forEach(pokemon => {
-        
+        //console.log(pokemon)
         const container$$=document.createElement("div");
         container$$.className="b-container";
-        container$$.innerHTML=`<h5><span>#${pokemon.id}</span>Name</h5>
+        container$$.innerHTML=`<div class="b-container__inner"><div class="b-container__front"><h5><span>#${pokemon.id}</span>Name</h5>
         <h4>${pokemon.name.toUpperCase()}</h4>
         <img src="${pokemon.img}" class="b-container__img">
         </span>
         <h7>Type</h7>
-        <span>${pokemon.type}`;
+        <span>${pokemon.type}</div>
+        <div class="b-container__back"><p>Height: ${pokemon.heigth} </p>
+        <p>Attack:${pokemon.stats[1].base_stat}</p>
+        <p>Defense:${pokemon.stats[2].base_stat}</p>
+        </div></div>`;
         mainContainer$$.appendChild(container$$)
         container$$.addEventListener("click",function(){battle(pokemon.id)})
         
@@ -233,41 +244,45 @@ const printPokemon = (pokemons)=>{
     });
 }
 const battle=async (id)=>{
-    // get de objeto del pokemons del ususario
-    let battleCall = await fetch("https://pokeapi.co/api/v2/pokemon/"+id);
-    const pokemonUser= await battleCall.json();
-    // get de objeto del pokemons de cpu  
-    let random=Math.floor(Math.random() * 150) + 1;
-    battleCall = await fetch("https://pokeapi.co/api/v2/pokemon/"+random);
-    const pokemonCpu= await battleCall.json();
-    
-    // oclulta el container con el listado de pokemons y visible el div para la batalla
-    mainContainer$$.className="b-maincontainer--hidden";
-    main$$.className="b-main--nobackground";
-    const battleContainer$$ = document.createElement("div");
-    battleContainer$$.className="b-battlecontainer";
-    main$$.appendChild(battleContainer$$);
-    
-    //elige quien empieza
-    let Starter="";
-    if (random <= 75){
-         Starter = pokemonUser.name
+    if (!battleCall){
+        // get de objeto del pokemons del ususario
+        battleCall = await fetch("https://pokeapi.co/api/v2/pokemon/"+id);
+        const pokemonUser= await battleCall.json();
+        // get de objeto del pokemons de cpu  
+        let random=Math.floor(Math.random() * 150) + 1;
+        battleCall = await fetch("https://pokeapi.co/api/v2/pokemon/"+random);
+        const pokemonCpu= await battleCall.json();
+        
+        // oclulta el container con el listado de pokemons y visible el div para la batalla
+        mainContainer$$.className="b-maincontainer--hidden";
+        main$$.className="b-main--nobackground";
+        const battleContainer$$ = document.createElement("div");
+        battleContainer$$.className="b-battlecontainer";
+        main$$.appendChild(battleContainer$$);
+        
+        //elige quien empieza
+        let Starter="";
+        if (random <= 75){
+            Starter = pokemonUser.name
+        }
+        else{
+            Starter = pokemonCpu.name
+        }
+        // añade los elementos al html 
+        battleContainer$$.innerHTML=`<img src="${pokemonUser.sprites.other.home.front_default}" class="b-battle__img"><h2>VS.</h2>
+        <img src="${pokemonCpu.sprites.other.home.front_default}" class="b-battle__img">`
+        const battleBoard$$=document.createElement("div");
+        battleBoard$$.className="b-battle__board";
+        battleBoard$$.innerHTML=`<h3 class="b-battle__board--user">User's pokemon: ${pokemonUser.name}</h3>
+        <h2>${Starter.toUpperCase()}  starts.</h2><button class="b-battle__button">GO!</button>
+        <h3 class="b-battle__board--cpu">Cpu's pokemon: ${pokemonCpu.name}</h3>`    
+        main$$.appendChild(battleBoard$$);
+        const battleButton$$=document.querySelector(".b-battle__button");
+        battleButton$$.addEventListener("click",function(){starts(pokemonCpu,pokemonUser,Starter,battleButton$$)});
     }
     else{
-        Starter = pokemonCpu.name
+        console.log("ya has ckick")
     }
-    // añade los elementos al html 
-    battleContainer$$.innerHTML=`<img src="${pokemonUser.sprites.other.home.front_default}" class="b-battle__img"><h2>VS.</h2>
-    <img src="${pokemonCpu.sprites.other.home.front_default}" class="b-battle__img">`
-    const battleBoard$$=document.createElement("div");
-    battleBoard$$.className="b-battle__board";
-    battleBoard$$.innerHTML=`<h3 class="b-battle__board--user">User's pokemon: ${pokemonUser.name}</h3>
-    <h2>${Starter.toUpperCase()}  starts.</h2><button class="b-battle__button">GO!</button>
-    <h3 class="b-battle__board--cpu">Cpu's pokemon: ${pokemonCpu.name}</h3>`    
-    main$$.appendChild(battleBoard$$);
-    const battleButton$$=document.querySelector(".b-battle__button");
-    battleButton$$.addEventListener("click",function(){starts(pokemonCpu,pokemonUser,Starter,battleButton$$)});
- 
 }
 const starts=(pokemonCpu,pokemonUser,Starter,battleButton$$)=>{
     battleButton$$.className="b-battle__button--clicked";
@@ -368,6 +383,7 @@ const hidebattle=()=>{
     hidethirdDiv$$.className="b-lifeboard--hidden"
     mainContainer$$.className="b-maincontainer";
     main$$.className="main"
+    battleCall="";
 
 }
 

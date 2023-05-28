@@ -16,8 +16,15 @@ body{
     right: 0;
     bottom: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    
+  }
+  .b-spinner__text{
+    font-size: 22px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    
   }
   
   .spinner::after {
@@ -122,25 +129,59 @@ body{
     padding-top: 10px;
     border: 5px solid transparent;
     border-radius: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
+    height: 200px;
     box-sizing: border-box;
     background: rgb(255,255,255);
     background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(246,167,167,0.6755952380952381) 78%, rgba(237,38,32,1) 100%);
     box-shadow: 4px 6px 0px 0px #000000;
     /*transition: width 1s, height 1s, background-color 1s, rotate 1s;*/
+    position: relative;; /* Remove this if you don't want the 3D effect */
+    perspective: 1000px;
 
 }
-
+.b-container__inner{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+.b-container:hover .b-container__inner {
+    transform: rotateY(180deg);
+ }
+ .b-container__front, .b-container__back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+  }
+.b-container__front{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+.b-container__back{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: rotateY(180deg);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 18px;
+}
+/*
 .b-container:hover {
     box-shadow: 4px 6px 0px 0px #000000;
     border: 5px solid rgb(165, 164, 164);
            
 
 }
-
+*/
 .b-container h6{
     color: gray;
 
