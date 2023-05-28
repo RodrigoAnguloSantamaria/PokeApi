@@ -115,10 +115,11 @@ async function getPokemonslist(){
  
     ///   lista-array de todos los pokemon con nombre y url para detalles para listar en documento de inicio y para
     ///   usarla para el filtro por nombre
-        const allpokemons= await fetch("https://pokeapi.co/api/v2/pokemon/?offset=0&limit=300")
+        const allpokemons= await fetch("https://pokeapi.co/api/v2/pokemon/?offset=0&limit=160")
         
         const listPokemon = await allpokemons.json();
-        
+    
+    // genero mi propio array mainlistpkemons 
     for (const pokemon of listPokemon.results) {
             let itempokemonlist = {
                 
@@ -138,10 +139,12 @@ async function getPokemonslist(){
             const listTypes = await alltypes.json();
             allTypes.push(listTypes);
         }
+        // genero mi propio array mainlisttypes
             mainlisttypes = allTypes.map((item)=>({
             name: item.name,
             integrators: item.pokemon.map((type)=>type.pokemon.name)
         }))
+        // agregar al select cada tipo de pokemon que hay
         for (const type of mainlisttypes) {
             const typeInSelect=type.name;
             const option$$=document.createElement("option");
@@ -159,11 +162,12 @@ async function getPokemonslist(){
             const listGenerations = await allgenerations.json();
             allGenerations.push(listGenerations);
         }
-        
+        // genero mi propio array mainlistgeneratios
             mainlistgenerations = allGenerations.map((item)=>({
             name: item.name,
             integrators: item.pokemon_species.map((type)=>type.name)
         }))
+        // agregar al select cada generacion de pokemon que hay
         for (const generation of mainlistgenerations) {
             const generationInSelect=generation.name;
             const option$$=document.createElement("option");

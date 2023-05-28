@@ -260,6 +260,7 @@ h5 span{
     font-size: 12px;
     display: flex;
     align-items: center;
+    flex-direction: row-reverse;
 }
 .b-lifeboard__reset{
     width: 100%;
